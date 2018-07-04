@@ -108,7 +108,28 @@ namespace UnityOSC
 				throw new Exception(String.Format("Can't send OSC packet to client {0} : {1}", _ipAddress, _port));
 			}
 		}
-		#endregion
-	}
+
+        public void SendTo(OSCPacket packet, string host, int port)
+        {
+            byte[] data = packet.BinaryData;
+            try
+            {
+                //Debug.Log("SendTo :"+host+"/"+port);
+                _ipAddress = IPAddress.Parse(host);
+                _port = port;
+
+                //Connect ();
+
+                _udpClient.Send(data, data.Length, host, port);
+                //Debug.Log ("Sent");
+
+            }
+            catch
+            {
+                throw new Exception(String.Format("Can't send OSC packet to client {0} : {1}", _ipAddress, _port));
+            }
+        }
+        #endregion
+    }
 }
 
