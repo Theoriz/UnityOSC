@@ -48,7 +48,7 @@ namespace UnityOSC
 			}
 			set
 			{
-				Trace.Assert(string.IsNullOrEmpty(_address) == false);
+				//Trace.Assert(string.IsNullOrEmpty(_address) == false); //Heavy in computation
 				_address = value;
 			}
 		}
