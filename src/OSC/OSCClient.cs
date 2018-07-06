@@ -119,14 +119,14 @@ namespace UnityOSC
                 _port = port;
 
                 //Connect ();
-
-                _udpClient.Send(data, data.Length, host, port);
+                var tmpUdpClient = new UdpClient(); //BOF BOF
+                tmpUdpClient.Send(data, data.Length, host, port);
                 //Debug.Log ("Sent");
 
             }
-            catch
+            catch(Exception e)
             {
-                throw new Exception(String.Format("Can't send OSC packet to client {0} : {1}", _ipAddress, _port));
+                throw new Exception(String.Format("Can't send OSC packet to client {0} : {1} | {2}", _ipAddress, _port, e.ToString()));
             }
         }
         #endregion
