@@ -22,21 +22,28 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace UnityOSC
 {
-    public class OSCReciever
+    public class OSCReceiver
     {
-        Queue<OSCMessage> _queue = new Queue<OSCMessage>();
-        OSCServer _server;
+        public delegate void MessageReceived(OSCMessage message);
+        public event MessageReceived messageReceived;
 
-        public void Open(int port)
+        public string Name;
+
+        private Queue<OSCMessage> _queue;
+        private OSCServer _server;
+
+        public bool Open(int port)
         {
+            _queue = new Queue<OSCMessage>();
 #if UNITY_EDITOR
-            if(PlayerSettings.runInBackground == false)
+            if (PlayerSettings.runInBackground == false)
             {
                 Debug.LogWarning("Recommend PlayerSettings > runInBackground = true");
             } 
@@ -45,11 +52,38 @@ namespace UnityOSC
             {
                 _server.Close();
             }
-            _server = new OSCServer(port);
-            _server.SleepMilliseconds = 0;
-            _server.PacketReceivedEvent += didRecievedEvent;
+
+            try
+            {
+                _server = new OSCServer(port);
+                _server.SleepMilliseconds = 0;
+                _server.PacketReceivedEvent += didReceivedEvent;
+            }
+            catch(Exception e)
+            {
+                Debug.LogError("[" + Name + "] Couldn't open port " + port);
+                return false;
+            }
+
+            return true;
         }
         
+        public void PropagateEvent()
+        {
+            if (messageReceived != null)
+                messageReceived(GetLastMessage());
+        }
+
+        public OSCMessage GetLastMessage()
+        {
+            return _queue.Dequeue();
+        }
+
+        public bool HasWaitingMessage()
+        {
+            return _queue.Count > 0;
+        }
+
         public void Close()
         {
             if (_server != null)
@@ -59,40 +93,40 @@ namespace UnityOSC
             }
         }
         
-        void didRecievedEvent(OSCServer sender, OSCPacket packet)
+        void didReceivedEvent(OSCServer sender, OSCPacket packet)
         {
             lock (_queue)
             {
                 if (packet.IsBundle())
                 {
                     var bundle = packet as OSCBundle;
-                    
-                    foreach(object obj in bundle.Data)
+
+                    foreach (object obj in bundle.Data)
                     {
                         OSCMessage msg = obj as OSCMessage;
+
+                        if (OSCMaster.Instance.LogIncoming)
+                        {
+                            Debug.Log("[" + Name + "] " + msg.Address);
+                            foreach (var data in msg.Data)
+                                Debug.Log(data);
+                        }
+
                         _queue.Enqueue(msg);
                     }
                 }
                 else
                 {
-                    _queue.Enqueue(packet as OSCMessage);
+                    OSCMessage msg = packet as OSCMessage;
+
+                    if (OSCMaster.Instance.LogIncoming)
+                    {
+                        Debug.Log("[" + Name + "] " + msg.Address);
+                        foreach (var data in msg.Data)
+                            Debug.Log(data);
+                    }
+                    _queue.Enqueue(msg);
                 }
-            }
-        }
-        
-        public bool hasWaitingMessages()
-        {
-            lock (_queue)
-            {
-                return 0 < _queue.Count;
-            }
-        }
-        
-        public OSCMessage getNextMessage()
-        {
-            lock (_queue)
-            {
-                return _queue.Dequeue();
             }
         }
     }

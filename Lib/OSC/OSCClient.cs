@@ -43,9 +43,13 @@ namespace UnityOSC
 		private IPAddress _ipAddress;
 		private int _port;
 		private UdpClient _udpClient;
-		#endregion
-		
-		#region Properties
+        #endregion
+
+        #region Properties
+
+        public string Name;
+        public bool LogOutgoing;
+
 		public IPAddress ClientIPAddress
 		{
 			get
@@ -107,7 +111,7 @@ namespace UnityOSC
 			{
 				throw new Exception(String.Format("Can't send OSC packet to client {0} : {1}", _ipAddress, _port));
 			}
-		}
+        }
 
         public void SendTo(OSCPacket packet, string host, int port)
         {
