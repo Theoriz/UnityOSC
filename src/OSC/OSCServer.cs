@@ -187,8 +187,9 @@ namespace UnityOSC
                     PacketReceivedEvent(this, _lastReceivedPacket);	
 				}
 			}
-			catch{
-				throw new Exception(String.Format("Can't create server at port {0}", _localPort));
+			catch (Exception e)
+            {
+                if (_receiverThread != null && _receiverThread.ThreadState != ThreadState.AbortRequested && _receiverThread.ThreadState != ThreadState.Aborted) throw new Exception("OSC Receive error : " + e.Message);
   			}
 		}
 		
