@@ -61,7 +61,7 @@ namespace UnityOSC
             }
             catch(Exception e)
             {
-                Debug.LogError("[" + Name + "] Couldn't open port " + port);
+                Debug.LogError("[" + Name + "] Couldn't open port " + port + " | " + e.Message);
                 return false;
             }
 
