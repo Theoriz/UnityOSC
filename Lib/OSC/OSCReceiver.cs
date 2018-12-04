@@ -70,8 +70,12 @@ namespace UnityOSC
         
         public void PropagateEvent()
         {
+            var msg = GetLastMessage();
+            if (msg == null)
+                return;
+
             if (messageReceived != null)
-                messageReceived(GetLastMessage());
+                messageReceived(msg);
         }
 
         public OSCMessage GetLastMessage()
