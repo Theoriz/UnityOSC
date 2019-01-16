@@ -71,8 +71,8 @@ namespace UnityOSC
         public void PropagateEvent()
         {
             var msg = GetLastMessage();
-            if (msg == null)
-                return;
+           //if (msg == null)
+               // return;
 
             if (messageReceived != null)
                 messageReceived(msg);
@@ -80,12 +80,17 @@ namespace UnityOSC
 
         public OSCMessage GetLastMessage()
         {
-            return _queue.Dequeue();
+            var lastMessage = new OSCMessage("");
+            lock (_queue)
+            {
+                lastMessage = _queue.Dequeue();
+            }
+            return lastMessage;
         }
 
-        public bool HasWaitingMessage()
+        public int WaitingMessagesCount()
         {
-            return _queue.Count > 0;
+            return _queue.Count;
         }
 
         public void Close()
@@ -129,6 +134,7 @@ namespace UnityOSC
                         foreach (var data in msg.Data)
                             Debug.Log(data);
                     }
+
                     _queue.Enqueue(msg);
                 }
             }

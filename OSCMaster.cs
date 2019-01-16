@@ -111,8 +111,8 @@ public class OSCMaster : MonoBehaviour
     private void Update()
     {
         foreach(var receiver in Receivers)
-        {
-            while (receiver.Value.HasWaitingMessage()) //Allow to switch from receiver/server thread to main thread
+        { 
+            while (receiver.Value.WaitingMessagesCount() > 0) //Allow to switch from receiver/server thread to main thread
                 receiver.Value.PropagateEvent();
         }
     }

@@ -54,7 +54,7 @@ namespace UnityOSC
 		private Thread _receiverThread;
 		private OSCPacket _lastReceivedPacket;
 		private int _sleepMilliseconds = 10;
-        private int _bufferSize = 1024;
+        private int _bufferSize = 8192; //default value in .NET
 		#endregion
 		
 		#region Properties
