@@ -40,74 +40,6 @@ public class OSCMaster : MonoBehaviour
         Clients = new Dictionary<string, OSCClient>();
     }
 
-    //public void Connect()
-    //{
-    //    try
-    //    {
-    //        if(server != null)
-    //            server.Close();
-
-    //        server = new OSCReceiver();
-    //        server.Open(localPort);
-
-    //        isConnected = true;
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Debug.LogError("Error with port " + localPort);
-    //        Debug.LogWarning(e.StackTrace);
-    //        isConnected = false;
-    //        server = null;
-    //    }
-    //}
-
-    //void packetReceived(OSCServer server, OSCPacket p)
-    //{
-    //    if (logIncoming)
-    //        Debug.Log("Received : " + p.Address + p.Data + " from : " + server.LocalPort);
-
-    //    if (p.IsBundle())
-    //    {
-    //        foreach (OSCMessage m in p.Data)
-    //        {
-    //            processMessage(m);
-    //        }
-    //    }else processMessage((OSCMessage)p);
-    //   // Debug.Log("Packet processed");
-    //}
-
-    // void processMessage(OSCMessage m)
-    // {   
-    //     if(logIncoming)
-    //            Debug.Log("Received : " + m.Address + " " + m.Data);
-
-    //    string[] addressSplit = m.Address.Split(new char[] { '/' });
-
-    //         Debug.Log(addressSplit.Length);
-
-    //     if (addressSplit.Length == 1 || addressSplit[1] != "OCF") //If length == 1 then it's not an OSC address, don't process it but propagate anyway
-    //     {
-    //if (messageAvailable != null)
-    //             messageAvailable(m); //propagate the message
-    //     }
-    //     else //Starts with /OCF/ so it's control
-    //     {
-    //string target = "";
-    //string property = "";
-    //try {
-    //	target = addressSplit[2];
-    //	property = addressSplit[3];
-    //}
-    //catch(Exception e) {
-    //	Debug.LogWarning("Error parsing OCF command ! ");
-    //}
-
-    //if (logIncoming) Debug.Log("Message received for Target : " + target + ", property = " + property);
-
-    //         ControllableMaster.UpdateValue(target, property, m.Data);
-    //     }
-    // }
-
     private void Update()
     {
         foreach(var receiver in Receivers)
@@ -115,6 +47,21 @@ public class OSCMaster : MonoBehaviour
             while (receiver.Value.WaitingMessagesCount() > 0) //Allow to switch from receiver/server thread to main thread
                 receiver.Value.PropagateEvent();
         }
+    }
+
+    public static bool HasClient(string clientId)
+    {
+        return Clients.ContainsKey(clientId);
+    }
+
+    public static bool HasReceiver(string receiverId)
+    {
+        return Receivers.ContainsKey(receiverId);
+    }
+
+    public static void CreateClient(string clientId, string destination, int port)
+    {
+        CreateClient(clientId, IPAddress.Parse(destination), port);
     }
 
     public static void CreateClient(string clientId, IPAddress destination, int port)
