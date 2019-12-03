@@ -121,7 +121,7 @@ public class OSCMaster : MonoBehaviour
 
         if (Instance.LogOutgoing)
         {
-            Debug.Log("[" + clientId + "|" + DateTime.Now.ToLocalTime() + "] " + msg.Address);
+            Debug.Log("[" + clientId + " to " + Clients[clientId].ClientIPAddress.ToString() + ":" + Clients[clientId].Port + "|" + DateTime.Now.ToLocalTime() + "] " + msg.Address);
             foreach (var data in msg.Data)
                 Debug.Log(data);
         }
@@ -135,7 +135,7 @@ public class OSCMaster : MonoBehaviour
             for (int i = 0; i < m.Data.Count; i++)
                 args += (i > 0 ? ", " : "") + m.Data[i].ToString();
 
-            Debug.Log("[OSCMaster | " + DateTime.Now.ToLocalTime() + "] " + m.Address + " : " + args);
+            Debug.Log("[OSCMaster to" + host + ":" + port +" | " + DateTime.Now.ToLocalTime() + "] " + m.Address + " : " + args);
         }
 
         var tempClient = new OSCClient(System.Net.IPAddress.Loopback, port);
