@@ -109,7 +109,8 @@ namespace UnityOSC
 			}
 			catch
 			{
-				throw new Exception(String.Format("Can't send OSC packet to client {0} : {1}", _ipAddress, _port));
+				//throw new Exception(String.Format("Can't send OSC packet to client {0} : {1}", _ipAddress, _port));
+				UnityEngine.Debug.LogError("Cannot send OSC packet to client " + _ipAddress + ":" + _port);
 			}
         }
 
