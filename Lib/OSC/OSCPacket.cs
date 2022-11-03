@@ -153,7 +153,7 @@ namespace UnityOSC
 					break;
 
 				case "String":
-					data = Encoding.ASCII.GetBytes((string)valueObject);
+					data = Encoding.UTF8.GetBytes((string)valueObject);
 					break;
 
 				case "Byte[]":
@@ -193,7 +193,7 @@ namespace UnityOSC
 				int count = 0;
 				for (int index = start; data[index] != 0; index++)	count++;
 
-				msgvalue = Encoding.ASCII.GetString(data, start, count);
+				msgvalue = Encoding.UTF8.GetString(data, start, count);
 				start += count + 1;
 				start = ((start + 3) / 4) * 4;
 			}
