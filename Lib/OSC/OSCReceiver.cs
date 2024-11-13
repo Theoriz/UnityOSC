@@ -58,6 +58,8 @@ namespace UnityOSC
                 _server = new OSCServer(port);
                 _server.SleepMilliseconds = 0;
                 _server.PacketReceivedEvent += didReceivedEvent;
+
+                Debug.Log("[" + Name + "] Listening on port " + port + ".");
             }
             catch(Exception e)
             {
