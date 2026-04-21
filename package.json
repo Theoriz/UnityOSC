@@ -1,0 +1,13 @@
+{
+  "name": "com.theoriz.unityosc",
+  "version": "1.0.0",
+  "displayName": "UnityOSC",
+  "description": "Open Sound Control (OSC) C# classes interface for Unity",
+  "unity": "2019.4",
+  "author": {
+    "name": "Theoriz",
+    "url": "https://theoriz.com"
+  },
+  "license": "MIT",
+  "keywords": ["osc", "network", "protocol"]
+}
