@@ -25,8 +25,8 @@ public class OSCMaster : MonoBehaviour
         }
     }
 
-    public static Dictionary<string, OSCReceiver> Receivers;
-    public static Dictionary<string, OSCClient> Clients;
+    public static Dictionary<string, OSCReceiver> Receivers = new();
+    public static Dictionary<string, OSCClient> Clients = new();
 
     public bool ShowDebug;
 
@@ -35,9 +35,14 @@ public class OSCMaster : MonoBehaviour
 
     void Awake()
     {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
-        Receivers = new Dictionary<string, OSCReceiver>();
-        Clients = new Dictionary<string, OSCClient>();
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Update()
