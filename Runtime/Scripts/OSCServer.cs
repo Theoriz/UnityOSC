@@ -215,7 +215,7 @@ namespace UnityOSC
 
 					var client = _udpClient;
 					if (client != null && client.Available == 0)
-						Thread.Sleep(_sleepMilliseconds);
+						Thread.Sleep(System.Math.Max(1, _sleepMilliseconds));
 				}
 				catch (Exception)
 				{

@@ -48,7 +48,6 @@ namespace UnityOSC
         #region Properties
 
         public string Name;
-        public bool LogOutgoing;
 
 		public IPAddress ClientIPAddress
 		{

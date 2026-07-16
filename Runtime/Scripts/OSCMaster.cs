@@ -45,6 +45,14 @@ public class OSCMaster : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        Receivers.Clear();
+        Clients.Clear();
+        _instance = null;
+    }
+
     private void Update()
     {
         foreach(var receiver in Receivers)

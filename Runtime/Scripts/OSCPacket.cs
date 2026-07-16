@@ -36,7 +36,6 @@ namespace UnityOSC
 		protected byte[] _binaryData;
 		protected string _address;
 		protected long _timeStamp;
-        public OSCServer server;
 		#endregion
 		
 		#region Properties

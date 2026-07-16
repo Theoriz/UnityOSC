@@ -68,7 +68,7 @@ namespace UnityOSC
 		{
 			// TODO: Pack bundle with timestamp in NTP format
 			
-			throw new NotImplementedException("OSCBundle.Pack() : Not implemented method.");
+			throw new NotSupportedException("OSCBundle.Pack: sending OSC bundles is not supported (receive-only).");
 		}
 
 		/// <summary>
