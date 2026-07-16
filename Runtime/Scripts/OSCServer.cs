@@ -209,10 +209,20 @@ namespace UnityOSC
 		{
 			while( _running )
 			{
-				Receive();
+				try
+				{
+					Receive();
 
-                if (_udpClient != null && _udpClient.Available == 0)
-				    Thread.Sleep(_sleepMilliseconds);
+					var client = _udpClient;
+					if (client != null && client.Available == 0)
+						Thread.Sleep(_sleepMilliseconds);
+				}
+				catch (Exception)
+				{
+					// Socket disposed during shutdown (or a transient error); stop if we're no longer running.
+					if (!_running)
+						break;
+				}
 			}
 		}
 		#endregion
