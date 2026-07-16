@@ -55,7 +55,7 @@ namespace Theoriz.UnityOSC.Tests
             foreach (var c in OSCMaster.Clients.Values) c.Close();
             OSCMaster.Clients.Clear();
 
-            var master = Object.FindFirstObjectByType<OSCMaster>();
+            var master = Object.FindAnyObjectByType<OSCMaster>();
             if (master != null) Object.DestroyImmediate(master.gameObject);
             OSCMaster.Instance = null;
         }

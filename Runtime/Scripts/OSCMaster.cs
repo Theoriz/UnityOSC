@@ -79,7 +79,7 @@ public class OSCMaster : MonoBehaviour
         Clients.Add(clientId, client);
 
         if (Instance.ShowDebug)
-            Debug.Log("Client " + clientId + " on " + destination + ":" + port + "created.");
+            Debug.Log("Client " + clientId + " on " + destination + ":" + port + " created.");
     }
 
     public static void RemoveClient(string clientId)
@@ -172,6 +172,9 @@ public class OSCMaster : MonoBehaviour
         {
             pair.Value.Close();
         }
+
+        Clients.Clear();
+        Receivers.Clear();
 
         _instance = null;
     }

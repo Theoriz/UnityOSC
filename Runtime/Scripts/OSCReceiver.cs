@@ -106,6 +106,7 @@ namespace UnityOSC
         {
             if (_server != null)
             {
+                _server.PacketReceivedEvent -= didReceivedEvent;
                 _server.Close();
                 _server = null;
             }
