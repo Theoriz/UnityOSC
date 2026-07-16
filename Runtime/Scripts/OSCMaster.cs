@@ -84,6 +84,8 @@ public class OSCMaster : MonoBehaviour
 
     public static void RemoveClient(string clientId)
     {
+        if (!HasClient(clientId)) return;
+
         Clients[clientId].Close();
         Clients.Remove(clientId);
 
@@ -113,6 +115,8 @@ public class OSCMaster : MonoBehaviour
 
     public static void RemoveReceiver(string receiverId)
     {
+        if (!HasReceiver(receiverId)) return;
+
         Receivers[receiverId].Close();
         Receivers.Remove(receiverId);
 
@@ -122,6 +126,12 @@ public class OSCMaster : MonoBehaviour
 
     public static void SendMessageUsingClient(string clientId, OSCMessage msg)
     {
+        if (!HasClient(clientId))
+        {
+            Debug.LogWarning("[OSC] No client named '" + clientId + "'.");
+            return;
+        }
+
         Clients[clientId].Send(msg);
 
         if (Instance.LogOutgoing)
@@ -143,9 +153,11 @@ public class OSCMaster : MonoBehaviour
             Debug.Log("[OSCMaster to" + host + ":" + port +" | " + DateTime.Now.ToLocalTime() + "] " + m.Address + " : " + args);
         }
 
-        var tempClient = new OSCClient(System.Net.IPAddress.Loopback, port);
-        tempClient.SendTo(m, host, port);
-        tempClient.Close();
+        using (var tempClient = new System.Net.Sockets.UdpClient())
+        {
+            byte[] data = m.BinaryData;
+            tempClient.Send(data, data.Length, host, port);
+        }
     }
 
 

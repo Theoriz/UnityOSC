@@ -191,15 +191,18 @@ namespace UnityOSC
 			if (type.Name == "String")
 			{
 				int count = 0;
-				for (int index = start; data[index] != 0; index++)	count++;
+				for (int index = start; index < data.Length && data[index] != 0; index++)	count++;
 
 				msgvalue = Encoding.UTF8.GetString(data, start, count);
 				start += count + 1;
 				start = ((start + 3) / 4) * 4;
+				if (start > data.Length) start = data.Length;
 			}
 			else if (type.Name == "Byte[]")
 			{
                 int length = UnpackValue<int>(data, ref start);
+                if (length < 0 || start + length > data.Length)
+                    length = Math.Max(0, data.Length - start);
                 byte[] buffer = new byte[length];
                 Array.Copy(data, start, buffer, 0, buffer.Length);
                 start += buffer.Length;
@@ -223,6 +226,12 @@ namespace UnityOSC
 
 					default:
 						throw new Exception("Unsupported data type.");
+				}
+
+				if (start + buffername.Length > data.Length)
+				{
+					start = data.Length;
+					return default(T);
 				}
 
 				Array.Copy(data, start, buffername, 0, buffername.Length);
@@ -291,6 +300,9 @@ namespace UnityOSC
 		/// </returns>
 		public static OSCPacket Unpack(byte[] data, ref int start, int end)
 		{
+            if (data == null || start >= data.Length)
+                return new OSCMessage("");
+
             if (data[start] == '#')
             {
                 return OSCBundle.Unpack(data, ref start, end);

@@ -73,8 +73,15 @@ namespace UnityOSC
         public void PropagateEvent()
         {
             var msg = GetLastMessage();
-           //if (msg == null)
-               // return;
+            if (msg == null)
+                return;
+
+            if (OSCMaster.Instance.LogIncoming)
+            {
+                Debug.Log("[" + Name + "] " + msg.Address);
+                foreach (var data in msg.Data)
+                    Debug.Log(data);
+            }
 
             if (messageReceived != null)
                 messageReceived(msg);
@@ -115,28 +122,12 @@ namespace UnityOSC
                     foreach (object obj in bundle.Data)
                     {
                         OSCMessage msg = obj as OSCMessage;
-
-                        if (OSCMaster.Instance.LogIncoming)
-                        {
-                            Debug.Log("[" + Name + "] " + msg.Address);
-                            foreach (var data in msg.Data)
-                                Debug.Log(data);
-                        }
-
                         _queue.Enqueue(msg);
                     }
                 }
                 else
                 {
                     OSCMessage msg = packet as OSCMessage;
-
-                    if (OSCMaster.Instance.LogIncoming)
-                    {
-                        Debug.Log("[" + Name + "] " + msg.Address);
-                        foreach (var data in msg.Data)
-                            Debug.Log(data);
-                    }
-
                     _queue.Enqueue(msg);
                 }
             }

@@ -52,6 +52,7 @@ namespace UnityOSC
 		private UdpClient _udpClient;
 		private int _localPort;
 		private Thread _receiverThread;
+		private volatile bool _running;
 		private OSCPacket _lastReceivedPacket;
 		private int _sleepMilliseconds = 10;
         private int _bufferSize = 8192; //default value in .NET
@@ -145,12 +146,13 @@ namespace UnityOSC
 			{
 				_udpClient = new UdpClient(_localPort);
                 _udpClient.Client.ReceiveBufferSize = _bufferSize;
-                _receiverThread = new Thread(new ThreadStart(this.ReceivePool));
+                _running = true;
+                _receiverThread = new Thread(new ThreadStart(this.ReceivePool)) { IsBackground = true };
 				_receiverThread.Start();
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
-				throw e;
+				throw;
 			}
 		}
 		
@@ -159,10 +161,16 @@ namespace UnityOSC
 		/// </summary>
 		public void Close()
 		{
-			if(_receiverThread !=null) _receiverThread.Abort();
-			_receiverThread = null;
-			_udpClient.Close();
+			_running = false;
+
+			if (_udpClient != null) _udpClient.Close(); // unblocks a blocking Receive()
 			_udpClient = null;
+
+			if (_receiverThread != null)
+			{
+				_receiverThread.Join(200);
+				_receiverThread = null;
+			}
 		}
 		
 
@@ -189,7 +197,8 @@ namespace UnityOSC
 			}
 			catch (Exception e)
             {
-                if (_receiverThread != null && _receiverThread.ThreadState != ThreadState.AbortRequested && _receiverThread.ThreadState != ThreadState.Aborted) throw new Exception("OSC Receive error : " + e.Message);
+                if (_running)
+                    UnityEngine.Debug.LogWarning("OSC receive error: " + e.Message);
   			}
 		}
 		
@@ -198,11 +207,11 @@ namespace UnityOSC
 		/// </summary>
 		private void ReceivePool()
 		{
-			while( true )
+			while( _running )
 			{
 				Receive();
-				
-                if (_udpClient.Available == 0)
+
+                if (_udpClient != null && _udpClient.Available == 0)
 				    Thread.Sleep(_sleepMilliseconds);
 			}
 		}

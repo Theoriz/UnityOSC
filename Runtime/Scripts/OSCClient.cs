@@ -79,9 +79,9 @@ namespace UnityOSC
 			{
 				_udpClient.Connect(_ipAddress, _port);	
 			}
-			catch
+			catch (Exception e)
 			{
-				throw new Exception(String.Format("Can't create client at IP address {0} and port {1}.", _ipAddress,_port));
+				throw new Exception(String.Format("Can't create client at IP address {0} and port {1}.", _ipAddress, _port), e);
 			}
 		}
 		
@@ -126,8 +126,10 @@ namespace UnityOSC
                 _port = port;
 
                 //Connect ();
-                var tmpUdpClient = new UdpClient(); //BOF BOF
-                tmpUdpClient.Send(data, data.Length, host, port);
+                using (var tmpUdpClient = new UdpClient()) // dispose the temp socket to avoid handle leak
+                {
+                    tmpUdpClient.Send(data, data.Length, host, port);
+                }
                 //Debug.Log ("Sent");
 
             }
