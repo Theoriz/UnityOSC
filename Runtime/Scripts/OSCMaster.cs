@@ -25,8 +25,8 @@ public class OSCMaster : MonoBehaviour
         }
     }
 
-    public static Dictionary<string, OSCReceiver> Receivers = new();
-    public static Dictionary<string, OSCClient> Clients = new();
+    public static Dictionary<string, OSCReceiver> Receivers = new Dictionary<string, OSCReceiver>();
+    public static Dictionary<string, OSCClient> Clients = new Dictionary<string, OSCClient>();
 
     public bool ShowDebug;
 

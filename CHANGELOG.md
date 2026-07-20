@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - OSCReceiver.GetLastMessage no longer throws when the queue empties between the count check and the dequeue, and no longer allocates a discarded OSCMessage per received message.
 - OSCReceiver.WaitingMessagesCount reads the queue under its lock.
+- OSCMaster no longer uses target-typed new(), which required C# 9 and broke the declared minimum of Unity 2019.4.
 
 
 ## [1.1.0] - 2026-07-16
