@@ -22,10 +22,6 @@ Or in the Unity Editor, go to **Window > Package Manager > + > Add package from 
 https://github.com/Theoriz/UnityOSC.git
 ```
 
-## License
-
-MIT — see [LICENSE](LICENSE).
-
 ## Credits
 
 Original library by [Jorge Garcia](https://github.com/jorgegarcia/UnityOSC).
