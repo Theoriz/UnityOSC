@@ -51,7 +51,7 @@ namespace UnityOSC
 				_address = value;
 			}
 		}
-				
+
 		public List<object> Data
 		{
 			get
@@ -59,7 +59,7 @@ namespace UnityOSC
 				return _data;
 			}
 		}
-		
+
 		public byte[] BinaryData
 		{
 			get
@@ -96,25 +96,6 @@ namespace UnityOSC
 		}
 		
 		/// <summary>
-		/// Swap endianess given a data set.
-		/// </summary>
-		/// <param name="data">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.Byte[]"/>
-		/// </returns>
-		protected static byte[] SwapEndian(byte[] data)
-		{
-			byte[] swapped = new byte[data.Length];
-			for(int i = data.Length - 1, j = 0 ; i >= 0 ; i--, j++)
-			{
-				swapped[j] = data[i];
-			}
-			return swapped;
-		}
-				
-		/// <summary>
 		/// Packs a value in a byte stream. Accepted types: Int32, Int64, Single, Double, String and Byte[].
 		/// </summary>
 		/// <param name="value">
@@ -133,22 +114,22 @@ namespace UnityOSC
 			{
 				case "Int32":
 					data = BitConverter.GetBytes((int)valueObject);
-					if (BitConverter.IsLittleEndian) data = SwapEndian(data);
+					if (BitConverter.IsLittleEndian) Array.Reverse(data);
 					break;
 
 				case "Int64":
 					data = BitConverter.GetBytes((long)valueObject);
-					if (BitConverter.IsLittleEndian) data = SwapEndian(data);
+					if (BitConverter.IsLittleEndian) Array.Reverse(data);
 					break;
 
 				case "Single":
 					data = BitConverter.GetBytes((float)valueObject);
-					if (BitConverter.IsLittleEndian) data = SwapEndian(data);
+					if (BitConverter.IsLittleEndian) Array.Reverse(data);
 					break;
 
 				case "Double":
 					data = BitConverter.GetBytes((double)valueObject);
-					if (BitConverter.IsLittleEndian) data = SwapEndian(data);
+					if (BitConverter.IsLittleEndian) Array.Reverse(data);
 					break;
 
 				case "String":
@@ -236,9 +217,11 @@ namespace UnityOSC
 				Array.Copy(data, start, buffername, 0, buffername.Length);
 				start += buffername.Length;
 
+				// buffername is a local copy of the slice, so reversing it in place is safe
+				// even though Unpack runs on the background receive thread.
 				if (BitConverter.IsLittleEndian)
 				{
-					buffername = SwapEndian(buffername);
+					Array.Reverse(buffername);
 				}
 
 				switch (type.Name)
@@ -310,6 +293,23 @@ namespace UnityOSC
             else return OSCMessage.Unpack(data, ref start);
 		}		
 		
+		/// <summary>
+		/// The packet's values as one comma-separated line, for logging. Building the line
+		/// once beats one Debug.Log per value, each of which captures a stack trace.
+		/// </summary>
+		internal string DescribeData()
+		{
+			if (_data == null || _data.Count == 0) return "";
+
+			var description = new StringBuilder();
+			for (int i = 0; i < _data.Count; i++)
+			{
+				if (i > 0) description.Append(", ");
+				description.Append(_data[i]);
+			}
+			return description.ToString();
+		}
+
 		/// <summary>
 		/// Pads null a list of bytes.
 		/// </summary>

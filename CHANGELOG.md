@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-07-20
+
+### Added
+
+- Round-trip tests for long, double, byte[] and mixed-type messages.
+- OSCAllocationBenchmark, an [Explicit] harness measuring allocation on the pack/unpack path.
+
+### Changed
+
+- OSCMessage builds its type tag with a StringBuilder, and numeric values swap endianness in place. Multi-argument messages allocate about 18% less; single-argument messages are unchanged.
+- Incoming and outgoing logging emits one line per message instead of one per argument.
+
+### Removed
+
+- OSCPacket.SwapEndian, replaced by in-place Array.Reverse.
+
+### Fixed
+
+- OSCReceiver.GetLastMessage no longer throws when the queue empties between the count check and the dequeue, and no longer allocates a discarded OSCMessage per received message.
+- OSCReceiver.WaitingMessagesCount reads the queue under its lock.
+
+
 ## [1.1.0] - 2026-07-16
 
 ### Added

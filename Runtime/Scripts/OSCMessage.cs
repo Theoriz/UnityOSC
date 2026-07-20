@@ -31,13 +31,13 @@ namespace UnityOSC
 		#region Constructors
 		public OSCMessage (string address)
 		{
-			_typeTag = DEFAULT.ToString();
+			_typeTag = new StringBuilder().Append(DEFAULT);
 			this.Address = address;
 		}
-		
+
 		public OSCMessage (string address, object msgvalue)
 		{
-			_typeTag = DEFAULT.ToString();
+			_typeTag = new StringBuilder().Append(DEFAULT);
 			this.Address = address;
 			Append(msgvalue);
 		}
@@ -52,8 +52,9 @@ namespace UnityOSC
 		private const char BYTE    = 'b';
 		private const char DEFAULT = ',';
 		
-		private string _typeTag;
-		
+		// Grown one char per appended value; only ever read by Pack.
+		private readonly StringBuilder _typeTag;
+
 		#endregion
 		
 		#region Properties
@@ -79,7 +80,7 @@ namespace UnityOSC
 			data.AddRange(OSCPacket.PackValue(_address));
 			OSCPacket.PadNull(data);
 
-			data.AddRange(OSCPacket.PackValue(_typeTag));
+			data.AddRange(OSCPacket.PackValue(_typeTag.ToString()));
 			OSCPacket.PadNull(data);
 
 			foreach (object value in _data)
@@ -201,7 +202,7 @@ namespace UnityOSC
 					throw new Exception("Unsupported data type.");
 			}
 
-			_typeTag += typeTag;
+			_typeTag.Append(typeTag);
 			_data.Add(value);
 		}
 		#endregion

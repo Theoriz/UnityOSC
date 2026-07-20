@@ -143,23 +143,13 @@ public class OSCMaster : MonoBehaviour
         Clients[clientId].Send(msg);
 
         if (Instance.LogOutgoing)
-        {
-            Debug.Log("[" + clientId + " to " + Clients[clientId].ClientIPAddress.ToString() + ":" + Clients[clientId].Port + "|" + DateTime.Now.ToLocalTime() + "] " + msg.Address);
-            foreach (var data in msg.Data)
-                Debug.Log(data);
-        }
+            Debug.Log("[" + clientId + " to " + Clients[clientId].ClientIPAddress + ":" + Clients[clientId].Port + "|" + DateTime.Now.ToLocalTime() + "] " + msg.Address + " : " + msg.DescribeData());
     }
 
     public static void SendMessage(OSCMessage m, string host, int port)
     {
         if (Instance.LogOutgoing)
-        {
-            string args = "";
-            for (int i = 0; i < m.Data.Count; i++)
-                args += (i > 0 ? ", " : "") + m.Data[i].ToString();
-
-            Debug.Log("[OSCMaster to" + host + ":" + port +" | " + DateTime.Now.ToLocalTime() + "] " + m.Address + " : " + args);
-        }
+            Debug.Log("[OSCMaster to" + host + ":" + port + " | " + DateTime.Now.ToLocalTime() + "] " + m.Address + " : " + m.DescribeData());
 
         using (var tempClient = new System.Net.Sockets.UdpClient())
         {

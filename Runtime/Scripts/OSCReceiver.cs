@@ -77,11 +77,7 @@ namespace UnityOSC
                 return;
 
             if (OSCMaster.Instance.LogIncoming)
-            {
-                Debug.Log("[" + Name + "] " + msg.Address);
-                foreach (var data in msg.Data)
-                    Debug.Log(data);
-            }
+                Debug.Log("[" + Name + "] " + msg.Address + " : " + msg.DescribeData());
 
             if (messageReceived != null)
                 messageReceived(msg);
@@ -89,17 +85,20 @@ namespace UnityOSC
 
         public OSCMessage GetLastMessage()
         {
-            var lastMessage = new OSCMessage("");
             lock (_queue)
             {
-                lastMessage = _queue.Dequeue();
+                return _queue.Count > 0 ? _queue.Dequeue() : null;
             }
-            return lastMessage;
         }
 
         public int WaitingMessagesCount()
         {
-            return _queue.Count;
+            // Locked like every other _queue access: the receive thread enqueues while
+            // the main thread drains.
+            lock (_queue)
+            {
+                return _queue.Count;
+            }
         }
 
         public void Close()
