@@ -33,6 +33,8 @@ public class OSCMaster : MonoBehaviour
     public bool LogIncoming;
     public bool LogOutgoing;
 
+    #region MonoBehaviour
+
     void Awake()
     {
         if (_instance != null && _instance != this)
@@ -45,6 +47,35 @@ public class OSCMaster : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    private void Update()
+    {
+        foreach(var receiver in Receivers)
+        {
+            while (receiver.Value.WaitingMessagesCount() > 0) //Allow to switch from receiver/server thread to main thread
+                receiver.Value.PropagateEvent();
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        foreach (var pair in Clients)
+        {
+            pair.Value.Close();
+        }
+
+        foreach (var pair in Receivers)
+        {
+            pair.Value.Close();
+        }
+
+        Clients.Clear();
+        Receivers.Clear();
+
+        _instance = null;
+    }
+
+    #endregion
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics()
     {
@@ -53,23 +84,11 @@ public class OSCMaster : MonoBehaviour
         _instance = null;
     }
 
-    private void Update()
-    {
-        foreach(var receiver in Receivers)
-        { 
-            while (receiver.Value.WaitingMessagesCount() > 0) //Allow to switch from receiver/server thread to main thread
-                receiver.Value.PropagateEvent();
-        }
-    }
+    #region Clients
 
     public static bool HasClient(string clientId)
     {
         return Clients.ContainsKey(clientId);
-    }
-
-    public static bool HasReceiver(string receiverId)
-    {
-        return Receivers.ContainsKey(receiverId);
     }
 
     public static void CreateClient(string clientId, string destination, int port)
@@ -99,6 +118,15 @@ public class OSCMaster : MonoBehaviour
 
         if (Instance.ShowDebug)
             Debug.Log("Client " + clientId + " removed.");
+    }
+
+    #endregion
+
+    #region Receivers
+
+    public static bool HasReceiver(string receiverId)
+    {
+        return Receivers.ContainsKey(receiverId);
     }
 
     public static OSCReceiver CreateReceiver(string receiverId, int port)
@@ -132,6 +160,10 @@ public class OSCMaster : MonoBehaviour
             Debug.Log("Receiver " + receiverId + " removed.");
     }
 
+    #endregion
+
+    #region Sending
+
     public static void SendMessageUsingClient(string clientId, OSCMessage msg)
     {
         if (!HasClient(clientId))
@@ -158,22 +190,5 @@ public class OSCMaster : MonoBehaviour
         }
     }
 
-
-    void OnApplicationQuit()
-    {
-        foreach (var pair in Clients)
-        {
-            pair.Value.Close();
-        }
-
-        foreach (var pair in Receivers)
-        {
-            pair.Value.Close();
-        }
-
-        Clients.Clear();
-        Receivers.Clear();
-
-        _instance = null;
-    }
+    #endregion
 }

@@ -39,6 +39,8 @@ namespace UnityOSC
         private Queue<OSCMessage> _queue;
         private OSCServer _server;
 
+        #region Socket
+
         public bool Open(int port)
         {
             _queue = new Queue<OSCMessage>();
@@ -69,7 +71,21 @@ namespace UnityOSC
 
             return true;
         }
-        
+
+        public void Close()
+        {
+            if (_server != null)
+            {
+                _server.PacketReceivedEvent -= didReceivedEvent;
+                _server.Close();
+                _server = null;
+            }
+        }
+
+        #endregion
+
+        #region Queued messages
+
         public void PropagateEvent()
         {
             var msg = GetLastMessage();
@@ -101,16 +117,7 @@ namespace UnityOSC
             }
         }
 
-        public void Close()
-        {
-            if (_server != null)
-            {
-                _server.PacketReceivedEvent -= didReceivedEvent;
-                _server.Close();
-                _server = null;
-            }
-        }
-        
+
         void didReceivedEvent(OSCServer sender, OSCPacket packet)
         {
             lock (_queue)
@@ -132,5 +139,7 @@ namespace UnityOSC
                 }
             }
         }
+
+        #endregion
     }
 }
