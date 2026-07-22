@@ -59,7 +59,7 @@ namespace UnityOSC
             {
                 _server = new OSCServer(port);
                 _server.SleepMilliseconds = 0;
-                _server.PacketReceivedEvent += didReceivedEvent;
+                _server.PacketReceivedEvent += OnPacketReceived;
 
                 Debug.Log("[" + Name + "] Listening on port " + port + ".");
             }
@@ -76,7 +76,7 @@ namespace UnityOSC
         {
             if (_server != null)
             {
-                _server.PacketReceivedEvent -= didReceivedEvent;
+                _server.PacketReceivedEvent -= OnPacketReceived;
                 _server.Close();
                 _server = null;
             }
@@ -118,7 +118,7 @@ namespace UnityOSC
         }
 
 
-        void didReceivedEvent(OSCServer sender, OSCPacket packet)
+        void OnPacketReceived(OSCServer sender, OSCPacket packet)
         {
             lock (_queue)
             {
